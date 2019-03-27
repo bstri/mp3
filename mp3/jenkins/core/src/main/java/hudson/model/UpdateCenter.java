@@ -551,21 +551,25 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
                                     UpdateCenter.class.getName()+".xml"));
     }
 
+    private void tryAddPluginToMap(Map<String,String> pluginMap, Plugin plugin){
+        final Plugin existing = pluginMap.get(plugin.name);
+        if (existing == null) {
+            pluginMap.put(plugin.name, plugin);
+        } else if (!existing.version.equals(plugin.version)) {
+            // allow secondary update centers to publish different versions
+            // TODO refactor to consolidate multiple versions of the same plugin within the one row
+            final String altKey = plugin.name + ":" + plugin.version;
+            if (!pluginMap.containsKey(altKey)) {
+                pluginMap.put(altKey, plugin);
+            }
+        }
+    }
+
     public List<Plugin> getAvailables() {
         Map<String,Plugin> pluginMap = new LinkedHashMap<String, Plugin>();
         for (UpdateSite site : sites) {
             for (Plugin plugin: site.getAvailables()) {
-                final Plugin existing = pluginMap.get(plugin.name);
-                if (existing == null) {
-                    pluginMap.put(plugin.name, plugin);
-                } else if (!existing.version.equals(plugin.version)) {
-                    // allow secondary update centers to publish different versions
-                    // TODO refactor to consolidate multiple versions of the same plugin within the one row
-                    final String altKey = plugin.name + ":" + plugin.version;
-                    if (!pluginMap.containsKey(altKey)) {
-                        pluginMap.put(altKey, plugin);
-                    }
-                }
+                tryAddPluginToMap(pluginMap, plugin);
             }
         }
 
@@ -603,17 +607,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
         Map<String,Plugin> pluginMap = new LinkedHashMap<String, Plugin>();
         for (UpdateSite site : sites) {
             for (Plugin plugin: site.getUpdates()) {
-                final Plugin existing = pluginMap.get(plugin.name);
-                if (existing == null) {
-                    pluginMap.put(plugin.name, plugin);
-                } else if (!existing.version.equals(plugin.version)) {
-                    // allow secondary update centers to publish different versions
-                    // TODO refactor to consolidate multiple versions of the same plugin within the one row
-                    final String altKey = plugin.name + ":" + plugin.version;
-                    if (!pluginMap.containsKey(altKey)) {
-                        pluginMap.put(altKey, plugin);
-                    }
-                }
+                tryAddPluginToMap(pluginMap, plugin);
             }
         }
 
