@@ -1,5 +1,7 @@
-public class CaseSensitiveTest {
-    public CaseSensitiveTest(){
+import static org.junit.Assert.*;
+
+public class AssertEqualDataBoundBeans {
+    public AssertEqualDataBoundBeans(){
 
     }
 
