@@ -878,7 +878,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         }
     }
 
-    private void updateAndTrim(){
+    public void updateAndTrim(){
         updateComputerList();
         trimLabels();
     }
