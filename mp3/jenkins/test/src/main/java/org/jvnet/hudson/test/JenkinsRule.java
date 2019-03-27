@@ -1413,51 +1413,11 @@ public class JenkinsRule implements TestRule, MethodRule, RootAction {
      * via {@link org.kohsuke.stapler.DataBoundConstructor}
      */
     public void assertEqualDataBoundBeans(Object lhs, Object rhs) throws Exception {
-        if (lhs==null && rhs==null)     return;
-        if (lhs==null)      fail("lhs is null while rhs="+rhs);
-        if (rhs==null)      fail("rhs is null while lhs="+lhs);
-
-        Constructor<?> lc = findDataBoundConstructor(lhs.getClass());
-        Constructor<?> rc = findDataBoundConstructor(rhs.getClass());
-        assertThat("Data bound constructor mismatch. Different type?", (Constructor)rc, is((Constructor)lc));
-
-        List<String> primitiveProperties = new ArrayList<String>();
-
-        String[] names = ClassDescriptor.loadParameterNames(lc);
-        Class<?>[] types = lc.getParameterTypes();
-        assertThat(types.length, is(names.length));
-        for (int i=0; i<types.length; i++) {
-            Object lv = ReflectionUtils.getPublicProperty(lhs, names[i]);
-            Object rv = ReflectionUtils.getPublicProperty(rhs, names[i]);
-
-            if (Iterable.class.isAssignableFrom(types[i])) {
-                Iterable lcol = (Iterable) lv;
-                Iterable rcol = (Iterable) rv;
-                Iterator ltr,rtr;
-                for (ltr=lcol.iterator(), rtr=rcol.iterator(); ltr.hasNext() && rtr.hasNext();) {
-                    Object litem = ltr.next();
-                    Object ritem = rtr.next();
-
-                    if (findDataBoundConstructor(litem.getClass())!=null) {
-                        assertEqualDataBoundBeans(litem,ritem);
-                    } else {
-                        assertThat(ritem, is(litem));
-                    }
-                }
-                assertThat("collection size mismatch between " + lhs + " and " + rhs, ltr.hasNext() ^ rtr.hasNext(),
-                        is(false));
-            } else
-            if (findDataBoundConstructor(types[i])!=null || (lv!=null && findDataBoundConstructor(lv.getClass())!=null) || (rv!=null && findDataBoundConstructor(rv.getClass())!=null)) {
-                // recurse into nested databound objects
-                assertEqualDataBoundBeans(lv,rv);
-            } else {
-                primitiveProperties.add(names[i]);
-            }
+        try {
+            AssertEqualDataBoundBeans.assertEqualDataBoundBeans(lhs, rhs);
+        } catch(Exception e) {
+            throw e;
         }
-
-        // compare shallow primitive properties
-        if (!primitiveProperties.isEmpty())
-            assertEqualBeans(lhs,rhs,Util.join(primitiveProperties,","));
     }
 
     /**

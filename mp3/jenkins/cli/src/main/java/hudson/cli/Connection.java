@@ -77,11 +77,11 @@ public class Connection {
 // Convenience methods
 //
 //
-    private KeyPair generateKeyPairWithSpec(DHParameterSpec spec){
-        KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
-        dh.initialize(spec);
-        return dh.generateKeyPair();
-    }
+    // private KeyPair generateKeyPairWithSpec(DHParameterSpec spec){
+    //     KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
+    //     dh.initialize(spec);
+    //     return dh.generateKeyPair();
+    // }
 
     public void writeUTF(String msg) throws IOException {
         dout.writeUTF(msg);
@@ -159,7 +159,10 @@ public class Connection {
             AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");
             paramGen.init(keySize);
 
-            keyPair = generateKeyPairWithSpec(paramGen.generateParameters().getParameterSpec(DHParameterSpec.class));
+            //keyPair = generateKeyPairWithSpec(paramGen.generateParameters().getParameterSpec(DHParameterSpec.class));
+            KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
+            dh.initialize(paramGen.generateParameters().getParameterSpec(DHParameterSpec.class));
+            keyPair = dh.generateKeyPair();
 
             // send a half and get a half
             writeKey(keyPair.getPublic());
@@ -167,7 +170,10 @@ public class Connection {
         } else {
             otherHalf = KeyFactory.getInstance("DH").generatePublic(readKey());
 
-            keyPair = generateKeyPairWithSpec(((DHPublicKey) otherHalf).getParams());
+            //keyPair = generateKeyPairWithSpec(((DHPublicKey) otherHalf).getParams());
+            KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
+            dh.initialize(((DHPublicKey) otherHalf).getParams());
+            keyPair = dh.generateKeyPair();
 
             // send a half and get a half
             writeKey(keyPair.getPublic());
