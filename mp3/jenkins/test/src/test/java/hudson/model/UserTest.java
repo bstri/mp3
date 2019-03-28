@@ -378,19 +378,24 @@ public class UserTest {
          assertFalse("User should not be loaded.", contained);
     }
 
-    @Test
-    public void testDoConfigSubmit() throws Exception {
+    private void testStub(User user, User user2){
         GlobalMatrixAuthorizationStrategy auth = new GlobalMatrixAuthorizationStrategy();   
         j.jenkins.setAuthorizationStrategy(auth);
         j.jenkins.setCrumbIssuer(null);
         HudsonPrivateSecurityRealm realm = new HudsonPrivateSecurityRealm(false);
         j.jenkins.setSecurityRealm(realm);
-        User user = realm.createAccount("John Smith", "password");
-        User user2 = realm.createAccount("John Smith2", "password");
+        user = realm.createAccount("John Smith", "password");
+        user2 = realm.createAccount("John Smith2", "password");
         user2.save();
         auth.add(Jenkins.ADMINISTER, user.getId());
         auth.add(Jenkins.READ, user2.getId());
         SecurityContextHolder.getContext().setAuthentication(user.impersonate());
+    }
+
+    @Test
+    public void testDoConfigSubmit() throws Exception {
+        User user, user2;
+        testStub(user, user2);
         HtmlForm form = j.createWebClient().login(user.getId(), "password").goTo(user2.getUrl() + "/configure").getFormByName("config");
         form.getInputByName("_.fullName").setValueAttribute("Alice Smith");
         j.submit(form);
@@ -415,17 +420,8 @@ public class UserTest {
 
     @Test
     public void testDoDoDelete() throws Exception {
-        GlobalMatrixAuthorizationStrategy auth = new GlobalMatrixAuthorizationStrategy();   
-        j.jenkins.setAuthorizationStrategy(auth);
-        j.jenkins.setCrumbIssuer(null);
-        HudsonPrivateSecurityRealm realm = new HudsonPrivateSecurityRealm(false);
-        j.jenkins.setSecurityRealm(realm);
-        User user = realm.createAccount("John Smith", "password");
-        User user2 = realm.createAccount("John Smith2", "password");
-        user2.save();
-        auth.add(Jenkins.ADMINISTER, user.getId());
-        auth.add(Jenkins.READ, user2.getId());
-        SecurityContextHolder.getContext().setAuthentication(user.impersonate());
+        User user, user2;
+        testStub(user, user2);
         HtmlForm form = j.createWebClient().login(user.getId(), "password").goTo(user2.getUrl() + "/delete").getFormByName("delete");
         j.submit(form);
         assertFalse("User should be deleted from memory.", User.getAll().contains(user2));
