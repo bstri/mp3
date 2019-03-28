@@ -378,11 +378,11 @@ public class UserTest {
          assertFalse("User should not be loaded.", contained);
     }
 
-    private void testStub(User user, User user2){
+    private void testStub(User user, User user2, HudsonPrivateSecurityRealm realm){
         GlobalMatrixAuthorizationStrategy auth = new GlobalMatrixAuthorizationStrategy();   
         j.jenkins.setAuthorizationStrategy(auth);
         j.jenkins.setCrumbIssuer(null);
-        HudsonPrivateSecurityRealm realm = new HudsonPrivateSecurityRealm(false);
+        realm = new HudsonPrivateSecurityRealm(false);
         j.jenkins.setSecurityRealm(realm);
         user = realm.createAccount("John Smith", "password");
         user2 = realm.createAccount("John Smith2", "password");
@@ -395,7 +395,8 @@ public class UserTest {
     @Test
     public void testDoConfigSubmit() throws Exception {
         User user, user2;
-        testStub(user, user2);
+        HudsonPrivateSecurityRealm realm;
+        testStub(user, user2, realm);
         HtmlForm form = j.createWebClient().login(user.getId(), "password").goTo(user2.getUrl() + "/configure").getFormByName("config");
         form.getInputByName("_.fullName").setValueAttribute("Alice Smith");
         j.submit(form);
@@ -421,7 +422,8 @@ public class UserTest {
     @Test
     public void testDoDoDelete() throws Exception {
         User user, user2;
-        testStub(user, user2);
+        HudsonPrivateSecurityRealm realm;
+        testStub(user, user2, realm);
         HtmlForm form = j.createWebClient().login(user.getId(), "password").goTo(user2.getUrl() + "/delete").getFormByName("delete");
         j.submit(form);
         assertFalse("User should be deleted from memory.", User.getAll().contains(user2));
