@@ -392,7 +392,7 @@ public class UserTest {
             auth.add(Jenkins.READ, user2.getId());
             SecurityContextHolder.getContext().setAuthentication(user.impersonate());
         } catch(IOException e){
-            throw(e);
+            throw(e); // rethrow
         }
     }
 

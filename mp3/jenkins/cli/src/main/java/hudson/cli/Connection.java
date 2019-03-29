@@ -77,11 +77,6 @@ public class Connection {
 // Convenience methods
 //
 //
-    // private KeyPair generateKeyPairWithSpec(DHParameterSpec spec){
-    //     KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
-    //     dh.initialize(spec);
-    //     return dh.generateKeyPair();
-    // }
 
     public void writeUTF(String msg) throws IOException {
         dout.writeUTF(msg);
@@ -141,6 +136,16 @@ public class Connection {
         return buf;
     }
 
+    private KeyPair generateKeyPairWithSpec(DHParameterSpec spec){
+        try {
+            KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
+            dh.initialize(spec);
+            return dh.generateKeyPair();
+        } catch(NoSuchAlgorithmException e){
+            throw e;
+        }
+    }
+
     /**
      * Performs a Diffie-Hellman key exchange and produce a common secret between two ends of the connection.
      *
@@ -159,10 +164,10 @@ public class Connection {
             AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");
             paramGen.init(keySize);
 
-            //keyPair = generateKeyPairWithSpec(paramGen.generateParameters().getParameterSpec(DHParameterSpec.class));
-            KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
-            dh.initialize(paramGen.generateParameters().getParameterSpec(DHParameterSpec.class));
-            keyPair = dh.generateKeyPair();
+            keyPair = generateKeyPairWithSpec(paramGen.generateParameters().getParameterSpec(DHParameterSpec.class));
+            // KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
+            // dh.initialize(paramGen.generateParameters().getParameterSpec(DHParameterSpec.class));
+            // keyPair = dh.generateKeyPair();
 
             // send a half and get a half
             writeKey(keyPair.getPublic());
@@ -170,10 +175,10 @@ public class Connection {
         } else {
             otherHalf = KeyFactory.getInstance("DH").generatePublic(readKey());
 
-            //keyPair = generateKeyPairWithSpec(((DHPublicKey) otherHalf).getParams());
-            KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
-            dh.initialize(((DHPublicKey) otherHalf).getParams());
-            keyPair = dh.generateKeyPair();
+            keyPair = generateKeyPairWithSpec(((DHPublicKey) otherHalf).getParams());
+            // KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
+            // dh.initialize(((DHPublicKey) otherHalf).getParams());
+            // keyPair = dh.generateKeyPair();
 
             // send a half and get a half
             writeKey(keyPair.getPublic());
