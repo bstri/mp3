@@ -141,7 +141,7 @@ public class Connection {
             KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
             dh.initialize(spec);
             return dh.generateKeyPair();
-        } catch(NoSuchAlgorithmException e){
+        } catch(GeneralSecurityException e){
             throw e;
         }
     }
