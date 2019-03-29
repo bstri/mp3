@@ -378,7 +378,7 @@ public class UserTest {
          assertFalse("User should not be loaded.", contained);
     }
 
-    private void testStub(User user, User user2, HudsonPrivateSecurityRealm realm){
+    private void testStub(User user, User user2, HudsonPrivateSecurityRealm realm) throws IOException {
         GlobalMatrixAuthorizationStrategy auth = new GlobalMatrixAuthorizationStrategy();   
         j.jenkins.setAuthorizationStrategy(auth);
         j.jenkins.setCrumbIssuer(null);
