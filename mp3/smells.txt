@@ -1,0 +1,7 @@
+1) This code smell is duplicated code (repeated in lines 611-620). We can refactor this by creating a method for the duplicated code.
+
+2) This code smell is feature envy. The code should belong in the jenkins class. We can refactor this by moving it to the correct class.
+
+3) This code can be eliminated by creating a for loop that repeats 4 times.
+
+4) We found duplicated code in the UserTest.java file. We created and called a method to eliminate this issue.
