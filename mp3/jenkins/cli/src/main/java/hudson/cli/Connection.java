@@ -136,14 +136,14 @@ public class Connection {
         return buf;
     }
 
-    private KeyPair generateKeyPairWithSpec(DHParameterSpec spec){
+    private KeyPair generateKeyPairWithSpec(DHParameterSpec spec) throws GeneralSecurityException {
         try {
             KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
             dh.initialize(spec);
             return dh.generateKeyPair();
         } catch(GeneralSecurityException e){
             throw e;
-        }
+        } 
     }
 
     /**
