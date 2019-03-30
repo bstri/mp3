@@ -398,8 +398,9 @@ public class UserTest {
 
     @Test
     public void testDoConfigSubmit() throws Exception {
-        User user, user2;
-        HudsonPrivateSecurityRealm realm;
+        User user = new User();
+        User user2 = new User();
+        HudsonPrivateSecurityRealm realm = new HudsonPrivateSecurityRealm();
         testStub(user, user2, realm); // ***
         HtmlForm form = j.createWebClient().login(user.getId(), "password").goTo(user2.getUrl() + "/configure").getFormByName("config");
         form.getInputByName("_.fullName").setValueAttribute("Alice Smith");
@@ -425,8 +426,9 @@ public class UserTest {
 
     @Test
     public void testDoDoDelete() throws Exception {
-        User user, user2;
-        HudsonPrivateSecurityRealm realm;
+        User user = new User();
+        User user2 = new User();
+        HudsonPrivateSecurityRealm realm = new HudsonPrivateSecurityRealm();
         testStub(user, user2, realm); // ***
         HtmlForm form = j.createWebClient().login(user.getId(), "password").goTo(user2.getUrl() + "/delete").getFormByName("delete");
         j.submit(form);
